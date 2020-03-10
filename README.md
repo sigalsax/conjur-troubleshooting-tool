@@ -10,21 +10,19 @@ Provide value to the team while also expanding knowledge and experience on a var
 
 ## Ideas:
 
-- A tool that fetch specific logs according to specific errors/keywords from Conjur in a containerized env and grabs the ENV variables from policy and container ENV. Ex: user input: "authentication" will return all log entries with "Authentication"
-
+- A tool that fetch specific logs according to specific errors/keywords from Conjur in a containerized environment and grabs the ENV variables from policy and container ENV. Ex: user input: "authentication" will return all log entries with "Authentication"
+    
+    - For DAP, checks API Endpoints are functioning correctly by making queries to health, nginx services, etc
+    
+    - For DAP, fetch Master/Follower logs and configurations
+ 
 - Sales force tool that extracts all useful information from cases necessary for engineers to troubleshoot the case
 
 - Page with mappings of repository names to their pull commands. Ex: `conjur` → `docker pull registry2.itci.conjur.net/conjur` (for both private and public registries)
 
 - Slackbot where if you use a certain #tag (#documentation), will create salesforce cases for documentation  
 
-
-# Phase 0
-- [x] Reach out to developers, PO/Ms, and SEs to understand the pain points and use this feedback to develop tooling that will feature in the project
-
-- [x] Define an MVP that will provide immediate value and a running backlog
-
-- [x] Create the design and map out call chains and possible user interactions
+## MVP
 
 For the first iteration of this tool, I have decided to pursue the first idea and create a tool that will do the following:
 
@@ -34,16 +32,23 @@ For the first iteration of this tool, I have decided to pursue the first idea an
 
 - A .txt file will be returned to the user with the ENV variables listed at the top and all associated log entries
 
-## Design
+## Phase 0
 
+- [x] Reach out to developers, PO/Ms, and SEs to understand the pain points and use this feedback to develop tooling that will feature in the project
+
+- [x] Define an MVP that will provide immediate value and a running backlog
+
+- [x] Create the design and map out call chains and possible user interactions
+
+## Design
 
 The following defines the sequence diagram for this project.   
 
 ![System Sequence Diagram](./troubleshootSystemSequenceDiagram.png)
 
-The following represnts the use case diagram for this project.
+The following represents the activity diagram for this project.
 
-![Use Case Service Diagram](./useCaseServiceMapping.png)
+![Activity Diagram](./activityDiagram.png)
 
 ### Open questions:
 
@@ -51,4 +56,6 @@ The following represnts the use case diagram for this project.
 
 - In the Troubleshooting class should I use a factory method that chooses between 2 different classes (DAP/Conjur) that implements the same interface (ConjurEnv)?
 
-- What language to write this project in?
+- What language to write this project in? 
+    
+    - Angular/Typescript, Node Docker API: https://www.npmjs.com/package/node-docker-api
