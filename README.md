@@ -10,7 +10,7 @@ Provide value to the team while also expanding knowledge and experience on a var
 
 ## Ideas:
 
-- A tool that fetch specific logs according to specific errors/keywords from Conjur in a containerized environment and grabs the ENV variables from policy and container ENV. Ex: user input: "authentication" will return all log entries with "Authentication"
+- A tool that fetches specific logs according to specific errors/keywords from Conjur in a containerized environment and grabs the ENV variables from policy and container ENV. Ex: user input: "authentication" will return all log entries with "Authentication".
     
     - For DAP, checks API Endpoints are functioning correctly by making queries to health, nginx services, etc
     
@@ -26,11 +26,15 @@ Provide value to the team while also expanding knowledge and experience on a var
 
 For the first iteration of this tool, I have decided to pursue the first idea and create a tool that will do the following:
 
-- Connect with Conjur OSS containers and extract ENV variables
+- Connect with Conjur / DAP containers and extract ENV variables
 
-- Parse and extract Conjur logs based on the type user requests
+    - *NOTE:* By default, the tool also supports DAP b/c from the functionality currently offered, the user can input the container name/id and receive the necessary logs and ENV variables which is environment agnostic
+    
+    - *NOTE:* For OSS, we are limited to setting the log levels as container ENV variables before OSS spin up
 
-- A .txt file will be returned to the user with the ENV variables listed at the top and all associated log entries
+- Parse and extract Conjur / DAP logs based on the type user requests
+
+- Return a result page with the ENV variables and all associated log entries listed
 
 ## Phase 0
 
@@ -49,6 +53,8 @@ The following defines the sequence diagram for this project.
 The following represents the activity diagram for this project.
 
 ![Activity Diagram](./activityDiagram.png)
+
+UI Mocks can be found here: https://www.figma.com/file/4J4Kege5OclT6YQDvY5Hbb/Conjur-Troubleshooting-Tool?node-id=0%3A1
 
 ### Open questions:
 
