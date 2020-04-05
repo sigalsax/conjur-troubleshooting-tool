@@ -54,7 +54,7 @@ The following represents the activity diagram for this project.
 
 ![Activity Diagram](./activityDiagram.png)
 
-UI Mocks can be found here: https://www.figma.com/file/4J4Kege5OclT6YQDvY5Hbb/Conjur-Troubleshooting-Tool?node-id=0%3A1
+UI Mocks can be found here: https://www.figma.com/file/QcAxsC58Lh969NLunI8sTT/Authn2Mock?node-id=0%3A1
 
 ### Open questions:
 
