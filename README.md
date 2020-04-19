@@ -46,13 +46,17 @@ For the first iteration of this tool, I have decided to pursue the first idea an
 
 ## Design
 
-The following defines the sequence diagram for this project.   
+Class diagram:
+![Class Diagram](./classDiagram.png)
 
+Sequence diagram:
 ![System Sequence Diagram](./troubleshootSystemSequenceDiagram.png)
 
-The following represents the activity diagram for this project.
+Activity diagram:
 
 ![Activity Diagram](./activityDiagram.png)
+
+
 
 UI Mocks can be found here: https://www.figma.com/file/QcAxsC58Lh969NLunI8sTT/Authn2Mock?node-id=0%3A1
 
