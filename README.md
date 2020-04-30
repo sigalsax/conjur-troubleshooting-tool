@@ -73,8 +73,25 @@ UI Mocks can be found here: https://www.figma.com/file/QcAxsC58Lh969NLunI8sTT/Au
 
 - App will save state so that the user does not have to redefine query with each session
  
-### Open questions:
+### Language
 
-- What language to write this project in? 
-    
-    - Angular/Typescript, Node Docker API: https://www.npmjs.com/package/node-docker-api
+I will build an application with Spring Boot to, amongst other things, manage dependencies, abstract away complexities with
+feature flags, and provide a server out of box. I will use the [docker-java](https://github.com/docker-java/docker-java)
+Java Docker API client. Their docs are hosted [here](https://javadoc.io/doc/com.github.docker-java/docker-java/3.0.1/index.html) and
+I will utilize the following:
+
+- ExecCreateCmd exec = dockerClient.execCreateCmd(containerId).withCmd("env"), to extract ENV variables from the container
+
+- LogContainerCmd cmd = dockerClient.logContainerCmd(containerId), to extract logs from the container
+
+TODO: Figure out how to export logs like so: `docker logs 06b329936e62 | grep "authentication"` efficiently without exporting
+ the whole log file. Example 2 [here](https://www.programcreek.com/java-api-examples/?api=com.github.dockerjava.api.command.LogContainerCmd)
+ might be helpful.
+
+- TarArchiveInputStream tarStream = new TarArchiveInputStream(dockerClient.copyArchiveFromContainerCmd(containerName,
+containerFile).exec()), to extract policy files from the container as a tar.
+
+In Conjur OSS (quickstart), files are located in the `policy` directory. So I will extract and query policy files for the
+unauthenticated user. Helpful resource: https://github.com/docker-java/docker-java/issues/991
+
+### Open questions:
