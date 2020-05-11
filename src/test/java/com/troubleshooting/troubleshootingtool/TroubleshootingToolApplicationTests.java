@@ -1,10 +1,10 @@
-package com.troubleshooting.authenticationtroubleshooting;
+package com.troubleshooting.troubleshootingtool;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AuthenticationTroubleshootingApplicationTests {
+class TroubleshootingToolApplicationTests {
 
 	@Test
 	void contextLoads() {
