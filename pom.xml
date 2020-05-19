@@ -43,18 +43,13 @@
 			<version>3.2.1</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/co.ntier/spring-mvc-archetype -->
 		<dependency>
-			<groupId>co.ntier</groupId>
-			<artifactId>spring-mvc-archetype</artifactId>
-			<version>1.0.2</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
-
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-			<scope>provided</scope>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
 	</dependencies>

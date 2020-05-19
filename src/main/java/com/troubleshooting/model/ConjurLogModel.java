@@ -18,5 +18,7 @@ public class ConjurLogModel implements ILogModel {
         return logList;
     }
 
-
+    public String toString(List<String> logList) {
+        return logList.toString();
+    }
 }
