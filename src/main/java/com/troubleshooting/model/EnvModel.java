@@ -1,20 +1,27 @@
 package com.troubleshooting.model;
 
-import java.util.HashMap;
-import java.util.Map;
+// Associate an environment variable and its value via key-value pairs
+public class EnvModel implements IEnvModel{
+    private String key="";
+    private String value="";
 
-public class EnvModel implements IEnvModel {
+    public String getKey() {
+        return key;
+    }
 
-    Map<String,String> envMap = new HashMap<String,String>();
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-    @Override
-    public Map<String, String> addEnv(String containerEnv) {
-        String[] envParts = containerEnv.split("=|\n");
+    public String getValue() {
+        return value;
+    }
 
-        for (int i = 0; i < envParts.length; i+=2) {
-                envMap.put(envParts[i], envParts[i + 1]);
-        }
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-        return envMap;
+    public String toString() {
+        return String.format("[key=%s, key=%s]", key, value);
     }
 }

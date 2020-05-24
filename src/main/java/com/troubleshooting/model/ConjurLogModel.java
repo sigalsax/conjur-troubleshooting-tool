@@ -1,24 +1,28 @@
 package com.troubleshooting.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
+// Data object for a Conjur log
 public class ConjurLogModel implements ILogModel {
-    List<String> logList = new ArrayList<>();
-    String origin;
-    String message;
+    private String logLevel;
+    private String message;
 
-    @Override
-    public void addLog(String log) {
-        logList.add(log);
+    public String getLogLevel() {
+        return logLevel;
+    }
+
+    public void setLogLevel(String logLevel) {
+        this.logLevel = logLevel;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override
-    public List getLogMap() {
-        return logList;
-    }
-
-    public String toString(List<String> logList) {
-        return logList.toString();
+    public String toString() {
+        return String.format("[logLevel=%s, message=%s]", logLevel, message);
     }
 }

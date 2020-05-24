@@ -1,7 +1,6 @@
 package com.troubleshooting.model;
 
-import java.util.List;
-
+// Log interface for Conjur and DAP logs
 interface ILogModel {
     String logLevel="";
     String timeStamp="";
@@ -9,8 +8,4 @@ interface ILogModel {
     String origin="";
     String service="";
     String message="";
-
-    void addLog(String log);
-
-    List getLogMap();
 }
