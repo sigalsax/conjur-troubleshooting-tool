@@ -1,6 +1,8 @@
+/**
+ * Model object for Conjur log input
+ */
 package com.troubleshooting.model;
 
-// Data object for a Conjur log
 public class ConjurLogModel implements ILogModel {
     private String logLevel;
     private String message;

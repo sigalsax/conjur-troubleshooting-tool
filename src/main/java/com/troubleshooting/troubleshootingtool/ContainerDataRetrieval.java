@@ -1,65 +1,67 @@
+/**
+ * Retrieves the data returned from the Docker Client and packs the data in the appropriate data models
+ */
 package com.troubleshooting.troubleshootingtool;
 
 import com.troubleshooting.model.ConjurLogModel;
-import com.troubleshooting.model.EnvModel;
-
-import com.troubleshooting.model.EnvsModel;
+import com.troubleshooting.model.EnvironmentModel;
+import com.troubleshooting.model.EnvironmentsModel;
 import com.troubleshooting.model.LogsModel;
+
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
-// Retrieves the data returned from the Docker Client and packs the data in the appropriate data models
 @Component
-public class ContainerDataRetrieval implements IDataRetrieval {
-    ContainerDataAccess access = new ContainerDataAccess();
+public final class ContainerDataRetrieval implements IDataRetrieval {
+    private ContainerDataAccess access = new ContainerDataAccess();
 
-    ConjurLogModel log = new ConjurLogModel();
-    LogsModel logs = new LogsModel();
+    private ConjurLogModel log = new ConjurLogModel();
+    private LogsModel logs = new LogsModel();
 
-    EnvModel env = new EnvModel();
-    EnvsModel envs = new EnvsModel();
+    private EnvironmentModel env = new EnvironmentModel();
+    private EnvironmentsModel envs = new EnvironmentsModel();
 
-    //	Extract Logs
+    static String STDERR = "STDERR";
+
     @Override
-    public LogsModel getData(String containerID) {
-        List<String> loggingFrames = access.getLogs(containerID);
+    public LogsModel getLogs(String containerID) {
+        List<String> loggingFrames = new ArrayList<String>();
 
-        for(int i = 0; i < loggingFrames.size(); i++) {
-            System.out.println(loggingFrames.get(i));
-            logParser(loggingFrames.get(i), log);
+        try {
+            loggingFrames = access.getLogs(containerID);
+            loggingFrames.stream().forEach(entry -> extractImportantPartsOfLogEntry(entry, log));
+        } catch (NullPointerException e) {
+            System.out.println(e);
         }
         return logs;
     }
 
-    // Extracts important parts of each Log entry
-    public void logParser(String logInstance, ConjurLogModel log) {
+    private void extractImportantPartsOfLogEntry(String logInstance, ConjurLogModel log) {
         String[] logEntry = logInstance.split(" ", 8);
 
-        if (!logEntry[0].contains("STDERR:")) {
+        if (!logEntry[0].contains(STDERR) && !logEntry[0].isEmpty() && logEntry.length >= 8) {
             log.setLogLevel(logEntry[1]);
             log.setMessage(logEntry[logEntry.length - 1]);
             logs.add(log);
         }
     }
 
-    // Extract Env
     @Override
-    public EnvsModel getInfo(String containerID) {
-        String envsString;
-
+    public EnvironmentsModel getEnvironment(String containerID) {
         try {
-            envsString = access.getEnv(containerID);
-            envParser(envsString, env);
+            String envsString = access.getEnv(containerID);
+            formatAndPopulateEnvCollection(envsString, env);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Unable to get environment variables from container... ");
         }
         return envs;
     }
 
-    // Extracts important parts of each Env entry
-    public void envParser(String envInstance, EnvModel env) {
+    private void formatAndPopulateEnvCollection(String envInstance, EnvironmentModel env) {
         String[] envParts = envInstance.split("=|\n");
+
         for (int i = 0; i < envParts.length; i+=2) {
             env.setKey(envParts[i]);
             env.setValue(envParts[i + 1]);
