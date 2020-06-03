@@ -7,7 +7,7 @@ import com.troubleshooting.model.ConjurLogModel;
 import com.troubleshooting.model.EnvironmentModel;
 import com.troubleshooting.model.EnvironmentsModel;
 import com.troubleshooting.model.LogsModel;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,15 +15,22 @@ import java.util.List;
 
 @Component
 public final class ContainerDataRetrieval implements IDataRetrieval {
-    private ContainerDataAccess access = new ContainerDataAccess();
-
-    private ConjurLogModel log = new ConjurLogModel();
-    private LogsModel logs = new LogsModel();
-
-    private EnvironmentModel env = new EnvironmentModel();
-    private EnvironmentsModel envs = new EnvironmentsModel();
+    private ContainerDataAccess access;
+    private ConjurLogModel log;
+    private LogsModel logs;
+    private EnvironmentModel env;
+    private EnvironmentsModel envs;
 
     static String STDERR = "STDERR";
+
+    @Autowired
+    public ContainerDataRetrieval(ContainerDataAccess access, ConjurLogModel log, LogsModel logs, EnvironmentModel env, EnvironmentsModel envs) {
+        this.access = access;
+        this.log = log;
+        this.logs = logs;
+        this.env = env;
+        this.envs = envs;
+    }
 
     @Override
     public LogsModel getLogs(String containerID) {
@@ -31,14 +38,14 @@ public final class ContainerDataRetrieval implements IDataRetrieval {
 
         try {
             loggingFrames = access.getLogs(containerID);
-            loggingFrames.stream().forEach(entry -> extractImportantPartsOfLogEntry(entry, log));
+            loggingFrames.stream().forEach(entry -> extractImportantPartsOfLogEntry(entry));
         } catch (NullPointerException e) {
             System.out.println(e);
         }
         return logs;
     }
 
-    private void extractImportantPartsOfLogEntry(String logInstance, ConjurLogModel log) {
+    private void extractImportantPartsOfLogEntry(String logInstance) {
         String[] logEntry = logInstance.split(" ", 8);
 
         if (!logEntry[0].contains(STDERR) && !logEntry[0].isEmpty() && logEntry.length >= 8) {
@@ -52,14 +59,14 @@ public final class ContainerDataRetrieval implements IDataRetrieval {
     public EnvironmentsModel getEnvironment(String containerID) {
         try {
             String envsString = access.getEnv(containerID);
-            formatAndPopulateEnvCollection(envsString, env);
+            formatAndPopulateEnvCollection(envsString);
         } catch (Exception e) {
             System.out.println("Unable to get environment variables from container... ");
         }
         return envs;
     }
 
-    private void formatAndPopulateEnvCollection(String envInstance, EnvironmentModel env) {
+    private void formatAndPopulateEnvCollection(String envInstance) {
         String[] envParts = envInstance.split("=|\n");
 
         for (int i = 0; i < envParts.length; i+=2) {

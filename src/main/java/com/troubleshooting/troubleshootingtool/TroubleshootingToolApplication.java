@@ -1,25 +1,15 @@
 package com.troubleshooting.troubleshootingtool;
 
-import com.troubleshooting.controller.AuthenticationTroubleshootController;
-import com.troubleshooting.model.AuthenticationUserDataModel;
-import com.troubleshooting.view.AuthenticationTroubleshootView;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 @SpringBootApplication
-public class TroubleshootingToolApplication implements CommandLineRunner {
+public class TroubleshootingToolApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TroubleshootingToolApplication.class, args);
+		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 	}
-
-	@Override
-	public void run(String... args) throws Exception {
-		AuthenticationTroubleshootController start = new AuthenticationTroubleshootController(new AuthenticationUserDataModel(), new AuthenticationTroubleshootView());
-	}
-
 }
 
 
