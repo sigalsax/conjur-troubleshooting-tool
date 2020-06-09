@@ -1,10 +1,9 @@
 package com.troubleshooting.controller;
 
-import com.troubleshooting.model.IAuthenticationUserDataModel;
+import org.springframework.ui.Model;
 
 interface ITroubleshoot {
+    void validateData(Model userModel);
 
-    void validateData(IAuthenticationUserDataModel userModel);
-
-    void getTroubleshootingData(IAuthenticationUserDataModel userModel);
+    void getTroubleshootingData(Model userModel);
 }

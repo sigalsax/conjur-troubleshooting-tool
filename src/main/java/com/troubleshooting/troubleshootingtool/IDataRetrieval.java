@@ -7,5 +7,5 @@ interface IDataRetrieval {
 
     LogsModel getLogs(String containerID);
 
-    EnvironmentsModel getEnvironment(String containerID);
+    EnvironmentsModel getEnvironmentInfo(String containerID);
 }

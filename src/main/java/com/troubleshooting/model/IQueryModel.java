@@ -1,6 +1,6 @@
 package com.troubleshooting.model;
 
-public interface IAuthenticationUserDataModel {
+public interface IQueryModel {
 
     String getContainerId();
 

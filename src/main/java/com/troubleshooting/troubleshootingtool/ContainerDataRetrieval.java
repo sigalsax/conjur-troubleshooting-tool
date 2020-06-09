@@ -38,6 +38,7 @@ public final class ContainerDataRetrieval implements IDataRetrieval {
 
         try {
             loggingFrames = access.getLogs(containerID);
+
             loggingFrames.stream().forEach(entry -> extractImportantPartsOfLogEntry(entry));
         } catch (NullPointerException e) {
             System.out.println(e);
@@ -56,7 +57,7 @@ public final class ContainerDataRetrieval implements IDataRetrieval {
     }
 
     @Override
-    public EnvironmentsModel getEnvironment(String containerID) {
+    public EnvironmentsModel getEnvironmentInfo(String containerID) {
         try {
             String envsString = access.getEnv(containerID);
             formatAndPopulateEnvCollection(envsString);

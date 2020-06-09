@@ -3,7 +3,7 @@
  */
 package com.troubleshooting.model;
 
-public class AuthenticationUserDataModel implements IAuthenticationUserDataModel{
+public class QueryModel implements IQueryModel{
     private String containerId;
     private String query;
 

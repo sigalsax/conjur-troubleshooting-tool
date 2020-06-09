@@ -2,6 +2,7 @@ package com.troubleshooting.troubleshootingtool;
 
 import com.troubleshooting.controller.AuthenticationTroubleshootController;
 import com.troubleshooting.model.*;
+import com.troubleshooting.service.ValidateService;
 import com.troubleshooting.view.AuthenticationTroubleshootView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,8 +11,8 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
 
     @Bean
-    public AuthenticationUserDataModel authenticationUserDataModel() {
-        return new AuthenticationUserDataModel();
+    public QueryModel queryModel() {
+        return new QueryModel();
     }
 
     @Bean
@@ -21,7 +22,12 @@ public class AppConfig {
 
     @Bean(name="authenticationController")
     public AuthenticationTroubleshootController authenticationTroubleshootController(){
-        return new AuthenticationTroubleshootController(authenticationUserDataModel(), authenticationTroubleshootView(), retrieveData());
+        return new AuthenticationTroubleshootController(retrieveData());
+    }
+
+    @Bean
+    public ValidateService validateService(){
+        return new ValidateService();
     }
 
     @Bean
