@@ -9,5 +9,4 @@ public interface IQueryModel {
     String getQuery();
 
     void setQuery(String query);
-
 }

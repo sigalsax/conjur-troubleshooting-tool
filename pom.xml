@@ -42,6 +42,11 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
 		<dependency>
 			<groupId>com.github.docker-java</groupId>

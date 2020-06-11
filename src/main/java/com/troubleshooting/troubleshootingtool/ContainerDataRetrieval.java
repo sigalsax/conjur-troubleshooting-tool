@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -33,11 +34,11 @@ public final class ContainerDataRetrieval implements IDataRetrieval {
     }
 
     @Override
-    public LogsModel getLogs(String containerID) {
+    public LogsModel getLogs(String containerID, String query) {
         List<String> loggingFrames = new ArrayList<String>();
 
         try {
-            loggingFrames = access.getLogs(containerID);
+            loggingFrames = access.getLogs(containerID, query);
 
             loggingFrames.stream().forEach(entry -> extractImportantPartsOfLogEntry(entry));
         } catch (NullPointerException e) {
@@ -47,12 +48,15 @@ public final class ContainerDataRetrieval implements IDataRetrieval {
     }
 
     private void extractImportantPartsOfLogEntry(String logInstance) {
-        String[] logEntry = logInstance.split(" ", 8);
-
-        if (!logEntry[0].contains(STDERR) && !logEntry[0].isEmpty() && logEntry.length >= 8) {
-            log.setLogLevel(logEntry[1]);
-            log.setMessage(logEntry[logEntry.length - 1]);
-            logs.add(log);
+        String[] logEntry = logInstance.split(" ", 5);
+        if (!logEntry[0].contains(STDERR) && !logEntry[0].isEmpty() && logEntry.length >= 5) {
+            if (logEntry[1].contains("origin") && logEntry[2].contains("request_id") && logEntry[3].contains("tid")) {
+                log.setOrigin(logEntry[1]);
+                log.setRequest_id(logEntry[2]);
+                log.setThread_id(logEntry[3]);
+                log.setMessage(logEntry[logEntry.length - 1]);
+                logs.add(log);
+            }
         }
     }
 
@@ -68,12 +72,15 @@ public final class ContainerDataRetrieval implements IDataRetrieval {
     }
 
     private void formatAndPopulateEnvCollection(String envInstance) {
-        String[] envParts = envInstance.split("=|\n");
+        String [] includedEnv = {"HOSTNAME", "DATABASE_URL", "PORT", "CONJUR_ADMIN_PASSWORD", "CONJUR_LOG_LEVEL", "CONJUR_PASSWORD", "CONJUR_ACCOUNT"};
+        String [] envParts = envInstance.split("=|\n");
 
         for (int i = 0; i < envParts.length; i+=2) {
-            env.setKey(envParts[i]);
-            env.setValue(envParts[i + 1]);
-            envs.addEnv(env);
+            if(Arrays.stream(includedEnv).anyMatch(envParts[i]::equals)) {
+                env.setKey(envParts[i]);
+                env.setValue(envParts[i + 1]);
+                envs.addEnv(env);
+            }
         }
     }
 }

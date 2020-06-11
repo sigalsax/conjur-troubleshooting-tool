@@ -14,10 +14,11 @@ public class AuthenticationTroubleshootController implements ITroubleshoot {
 
     ContainerDataRetrieval retrieveData;
 
-    ValidateService validate;
+    ValidateService validateService;
 
-    public AuthenticationTroubleshootController(ContainerDataRetrieval retrieveData) {
+    public AuthenticationTroubleshootController(ContainerDataRetrieval retrieveData, ValidateService validateService) {
         this.retrieveData=retrieveData;
+        this.validateService=validateService;
     }
 
     @RequestMapping(value="/", method = RequestMethod.GET)
@@ -35,10 +36,11 @@ public class AuthenticationTroubleshootController implements ITroubleshoot {
         model.addAttribute("containerId", containerId);
         model.addAttribute("query", query);
 
-        boolean isValidUser = validate.validateInput(containerId, query);
+        boolean isValidUser = validateService.validateInput(containerId, query);
 
         if (!isValidUser) {
             model.addAttribute("errorMessage", "Invalid Input");
+            // TODO: fix routing. If error, do not process to /troubleshoot
             return "index";
         }
 
@@ -48,7 +50,7 @@ public class AuthenticationTroubleshootController implements ITroubleshoot {
 
     @Override
     public void getTroubleshootingData(Model userModel) {
-        retrieveData.getLogs((String) userModel.getAttribute("containerId"));
+        retrieveData.getLogs((String) userModel.getAttribute("containerId"), (String) userModel.getAttribute("query"));
         retrieveData.getEnvironmentInfo((String) userModel.getAttribute("containerId"));
     }
 }

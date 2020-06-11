@@ -22,13 +22,11 @@ public class AppConfig {
 
     @Bean(name="authenticationController")
     public AuthenticationTroubleshootController authenticationTroubleshootController(){
-        return new AuthenticationTroubleshootController(retrieveData());
+        return new AuthenticationTroubleshootController(retrieveData(), validateService());
     }
 
     @Bean
-    public ValidateService validateService(){
-        return new ValidateService();
-    }
+    public ValidateService validateService(){ return new ValidateService(); }
 
     @Bean
     public ContainerDataAccess containerDataAccess() {

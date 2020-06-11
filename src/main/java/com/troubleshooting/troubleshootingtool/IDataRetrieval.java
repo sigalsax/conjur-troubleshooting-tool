@@ -5,7 +5,7 @@ import com.troubleshooting.model.LogsModel;
 
 interface IDataRetrieval {
 
-    LogsModel getLogs(String containerID);
+    LogsModel getLogs(String containerID, String query);
 
     EnvironmentsModel getEnvironmentInfo(String containerID);
 }

@@ -40,7 +40,7 @@ public class ContainerDataAccess implements IDataAccess{
         return outputStream.toString();
     }
 
-    public List<String> getLogs(String containerID) {
+    public List<String> getLogs(String containerID, String query) {
         List entry = new ArrayList();
 
         // TODO Add query to property configuration
@@ -49,7 +49,9 @@ public class ContainerDataAccess implements IDataAccess{
             logContainer.exec(new LogContainerResultCallback() {
                 @Override
                 public void onNext(Frame item) {
-                    entry.add(item.toString());
+                    if (item.toString().contains(query)) {
+                        entry.add(item.toString());
+                    }
                 }
             }).awaitCompletion();
         } catch (InterruptedException e) {
