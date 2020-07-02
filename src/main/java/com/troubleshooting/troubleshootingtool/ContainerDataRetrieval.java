@@ -1,86 +1,101 @@
-/**
- * Retrieves the data returned from the Docker Client and packs the data in the appropriate data models
- */
 package com.troubleshooting.troubleshootingtool;
 
 import com.troubleshooting.model.ConjurLogModel;
 import com.troubleshooting.model.EnvironmentModel;
-import com.troubleshooting.model.EnvironmentsModel;
-import com.troubleshooting.model.LogsModel;
+import com.troubleshooting.model.EnvironmentCollectionModel;
+import com.troubleshooting.model.LogCollectionModel;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
+/**
+ * Retrieves the data returned from the Docker Client and packs the data in the appropriate data models
+ */
 @Component
-public final class ContainerDataRetrieval implements IDataRetrieval {
+public final class ContainerDataRetrieval implements DataRetrieval {
     private ContainerDataAccess access;
-    private ConjurLogModel log;
-    private LogsModel logs;
-    private EnvironmentModel env;
-    private EnvironmentsModel envs;
+    private LogCollectionModel logCollection;
+    private EnvironmentCollectionModel environmentCollection;
 
     static String STDERR = "STDERR";
 
     @Autowired
-    public ContainerDataRetrieval(ContainerDataAccess access, ConjurLogModel log, LogsModel logs, EnvironmentModel env, EnvironmentsModel envs) {
+    public ContainerDataRetrieval(ContainerDataAccess access, LogCollectionModel logCollection, EnvironmentCollectionModel environmentCollection) {
         this.access = access;
-        this.log = log;
-        this.logs = logs;
-        this.env = env;
-        this.envs = envs;
+        this.logCollection = logCollection;
+        this.environmentCollection = environmentCollection;
     }
 
     @Override
-    public LogsModel getLogs(String containerID, String query) {
+    public LogCollectionModel getLogs(String containerID, String query) {
         List<String> loggingFrames = new ArrayList<String>();
 
-        try {
-            loggingFrames = access.getLogs(containerID, query);
+        loggingFrames = access.getLogs(containerID, query);
+        loggingFrames.stream().forEach(entry -> extractImportantPartsOfLogEntry(entry));
 
-            loggingFrames.stream().forEach(entry -> extractImportantPartsOfLogEntry(entry));
-        } catch (NullPointerException e) {
-            System.out.println(e);
-        }
-        return logs;
+        return logCollection;
     }
 
     private void extractImportantPartsOfLogEntry(String logInstance) {
+        List<String> includedEnv = Arrays.asList(new String[] {
+                "origin",
+                "request_id",
+                "tid",
+        });
+
         String[] logEntry = logInstance.split(" ", 5);
-        if (!logEntry[0].contains(STDERR) && !logEntry[0].isEmpty() && logEntry.length >= 5) {
+        if (!logEntry[0].contains(STDERR) && !logEntry[0].isEmpty()) {
+            System.out.println(logInstance);
             if (logEntry[1].contains("origin") && logEntry[2].contains("request_id") && logEntry[3].contains("tid")) {
-                log.setOrigin(logEntry[1]);
-                log.setRequest_id(logEntry[2]);
-                log.setThread_id(logEntry[3]);
-                log.setMessage(logEntry[logEntry.length - 1]);
-                logs.add(log);
+                logCollection.add(new ConjurLogModel(logEntry[1], logEntry[2], logEntry[3], logEntry[logEntry.length - 1]));
             }
         }
     }
 
     @Override
-    public EnvironmentsModel getEnvironmentInfo(String containerID) {
+    public EnvironmentCollectionModel getEnvironmentInfo(String containerID) {
         try {
-            String envsString = access.getEnv(containerID);
-            formatAndPopulateEnvCollection(envsString);
+            String environmentCollectionString = access.getEnvironmentInfo(containerID);
+            populateEnvCollection(environmentCollectionString);
         } catch (Exception e) {
-            System.out.println("Unable to get environment variables from container... ");
+            System.out.println("Unable to get environment variables from container...");
+            throw e;
         }
-        return envs;
+        return environmentCollection;
     }
 
-    private void formatAndPopulateEnvCollection(String envInstance) {
-        String [] includedEnv = {"HOSTNAME", "DATABASE_URL", "PORT", "CONJUR_ADMIN_PASSWORD", "CONJUR_LOG_LEVEL", "CONJUR_PASSWORD", "CONJUR_ACCOUNT"};
-        String [] envParts = envInstance.split("=|\n");
+    private void populateEnvCollection(String envInstance) {
+        Properties prop = new Properties();
 
-        for (int i = 0; i < envParts.length; i+=2) {
-            if(Arrays.stream(includedEnv).anyMatch(envParts[i]::equals)) {
-                env.setKey(envParts[i]);
-                env.setValue(envParts[i + 1]);
-                envs.addEnv(env);
-            }
+        try {
+            prop.load(new StringReader(envInstance));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        List<String> includedEnv = Arrays.asList(new String[] {
+                "HOSTNAME",
+                "DATABASE_URL",
+                "PORT",
+                "CONJUR_ADMIN_PASSWORD",
+                "CONJUR_LOG_LEVEL",
+                "CONJUR_PASSWORD",
+                "CONJUR_ACCOUNT",
+                "CONJUR_MAJOR_VERSION",
+                "CONJUR_DATA_KEY"
+        });
+
+        List<EnvironmentModel> environmentModels = prop.entrySet().stream().filter(e -> includedEnv.contains(e.getKey()))
+                .map(e -> new EnvironmentModel(e.getKey().toString(), e.getValue().toString())).collect(Collectors.toList());
+
+        environmentCollection.addAll(environmentModels);
     }
 }

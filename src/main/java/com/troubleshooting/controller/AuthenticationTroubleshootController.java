@@ -1,56 +1,63 @@
 package com.troubleshooting.controller;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.troubleshooting.troubleshootingtool.ContainerDataRetrieval;
 import com.troubleshooting.service.ValidateService;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.troubleshooting.troubleshootingtool.Input;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-
 @Controller
-public class AuthenticationTroubleshootController implements ITroubleshoot {
+public class AuthenticationTroubleshootController implements Troubleshoot {
 
-    ContainerDataRetrieval retrieveData;
+    private ContainerDataRetrieval retrieveData;
+    private ValidateService validateService;
 
-    ValidateService validateService;
+    private final String CONTAINERID = "containerId";
+    private final String QUERY = "query";
+    private final String ERROR = "errorMessage";
+    private final String LOGENTRIES = "logEntries";
+    private final String ENVIRONMENTVARIABLES = "environmentVariables";
+
+    private final String INDEXPAGE = "index";
+    private final String TROUBLESHOOTPAGE = "troubleshoot";
 
     public AuthenticationTroubleshootController(ContainerDataRetrieval retrieveData, ValidateService validateService) {
-        this.retrieveData=retrieveData;
-        this.validateService=validateService;
-    }
-
-    @RequestMapping(value="/", method = RequestMethod.GET)
-    public String showLoginPage(ModelMap model){
-        return "index";
+        this.retrieveData = retrieveData;
+        this.validateService = validateService;
     }
 
     @Override
-    public void validateData(Model userModel) {}
+    public boolean validateInput(Input input) {
+        return validateService.validateInput(input);
+    }
 
-    // TODO: Use JQuery for easy re-rendering to index page
-    // TODO: Look into converting input to JSON objects
-    @RequestMapping(value="/troubleshoot", method=RequestMethod.POST)
-    public String getTroubleshootingData(Model model, @RequestParam String containerId, @RequestParam String query) {
-        model.addAttribute("containerId", containerId);
-        model.addAttribute("query", query);
+    @Override
+    public String getTroubleshootingData(String containerId, String query) {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonLogs="";
+        String jsonEnv="";
 
-        boolean isValidUser = validateService.validateInput(containerId, query);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
-        if (!isValidUser) {
-            model.addAttribute("errorMessage", "Invalid Input");
-            // TODO: fix routing. If error, do not process to /troubleshoot
-            return "index";
+        try {
+            jsonLogs = mapper.writeValueAsString(retrieveData.getLogs(containerId, query));
+            jsonEnv = mapper.writeValueAsString(retrieveData.getEnvironmentInfo(containerId));
+            return jsonLogs;
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
-
-        getTroubleshootingData(model);
-        return "troubleshoot";
+        return jsonLogs;
     }
 
-    @Override
-    public void getTroubleshootingData(Model userModel) {
-        retrieveData.getLogs((String) userModel.getAttribute("containerId"), (String) userModel.getAttribute("query"));
-        retrieveData.getEnvironmentInfo((String) userModel.getAttribute("containerId"));
+    @GetMapping(value = "/subView")
+    public @ResponseBody String getSubView(@RequestParam String containerId, @RequestParam String query) {
+        if (!validateInput(new Input(containerId, query))) {
+            return "Invalid input!";
+        }
+        return getTroubleshootingData(containerId, query);
     }
 }

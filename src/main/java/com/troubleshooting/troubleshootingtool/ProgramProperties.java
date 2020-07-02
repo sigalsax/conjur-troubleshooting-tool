@@ -8,12 +8,13 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties
 @PropertySource("classpath:application.properties")
 public class ProgramProperties {
-    String containerid;
+    private String containerId;
 
     public String getContainerId() {
-        return containerid;
+        return containerId;
     }
-    public void setContainerId(String containerid) {
-        this.containerid = containerid;
+
+    public void setContainerId(String containerId) {
+        this.containerId = containerId;
     }
 }

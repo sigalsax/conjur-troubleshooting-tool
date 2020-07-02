@@ -1,28 +1,29 @@
-package com.troubleshooting.model;
+package com.troubleshooting.troubleshootingtool;
 
 /**
- * Model object for user input
+ * Holds the user input for validation
  */
-public class QueryModel implements Query {
+public class Input {
     private String containerId;
     private String query;
 
-    @Override
+    public Input(String containerId, String query) {
+        this.containerId = containerId;
+        this.query = query;
+    }
+
     public String getContainerId() {
         return containerId;
     }
 
-    @Override
     public void setContainerId(String containerId) {
         this.containerId = containerId;
     }
 
-    @Override
     public String getQuery() {
         return query;
     }
 
-    @Override
     public void setQuery(String query) {
         this.query = query;
     }

@@ -1,6 +1,9 @@
 package com.troubleshooting.model;
 
-public interface IQueryModel {
+/**
+ * Interface for queries
+ */
+public interface Query {
 
     String getContainerId();
 

@@ -1,12 +1,12 @@
-/**
- * Model object for a collection of container environment variables
- */
 package com.troubleshooting.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnvironmentsModel {
+/**
+ * Model object for a collection of container environment variables
+ */
+public class EnvironmentCollectionModel {
 
     List<EnvironmentModel> envList = new ArrayList<>();
 
@@ -14,7 +14,11 @@ public class EnvironmentsModel {
         envList.add(environmentModel);
     }
 
-    public String toString(List<String> envList) {
+    public void addAll(List<EnvironmentModel> environmentModels) {
+        envList.addAll(environmentModels);
+    }
+
+    public String toString() {
         return envList.toString();
     }
 }

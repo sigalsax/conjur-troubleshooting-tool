@@ -9,10 +9,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 @SpringBootApplication
 public class TroubleshootingToolApplication extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
-		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		SpringApplication.run(TroubleshootingToolApplication.class, args);
-	}
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        SpringApplication.run(TroubleshootingToolApplication.class, args);
+    }
 }
-
 
